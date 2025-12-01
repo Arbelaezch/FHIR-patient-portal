@@ -1,0 +1,27 @@
+# FastAPI and ASGI server
+fastapi[standard]==0.115.6
+uvicorn[standard]==0.34.0
+
+# FHIR Resources (R4)
+fhir.resources==8.1.0
+
+# Database - PostgreSQL with async support
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.20
+pydantic[email]==2.10.6
+
+# OAuth2 for SMART on FHIR
+authlib==1.4.0
+httpx==0.28.1
+
+# Environment variables
+python-dotenv==1.0.1
+
+# Utilities
+pydantic-settings==2.7.1
