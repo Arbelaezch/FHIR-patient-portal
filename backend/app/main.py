@@ -2,9 +2,10 @@
 Main FastAPI application.
 Initializes the app, middleware, and routes.
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.config import settings
 from app.database import init_db
@@ -48,6 +49,19 @@ app.add_middleware(
 )
 
 
+class FHIRHeaderMiddleware(BaseHTTPMiddleware):
+    """Middleware to add proper FHIR content-type headers."""
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        # Only apply to FHIR endpoints
+        if request.url.path.startswith("/fhir"):
+            response.headers["Content-Type"] = "application/fhir+json; charset=utf-8"
+        return response
+
+# Add the middleware after CORS
+app.add_middleware(FHIRHeaderMiddleware)
+
+
 # Root endpoint
 @app.get("/", tags=["Health"])
 async def root():
@@ -67,7 +81,7 @@ async def health_check():
 
 
 # Import and include routers
-# TODO: Add routers as we build them
-# from app.routes.fhir import patient, observation, medication, condition
-# app.include_router(patient.router, prefix="/fhir", tags=["FHIR - Patient"])
-# app.include_router(observation.router, prefix="/fhir", tags=["FHIR - Observation"])
+from app.routes.fhir import patient, metadata
+
+app.include_router(patient.router, prefix="/fhir", tags=["FHIR - Patient"])
+app.include_router(metadata.router, prefix="/fhir", tags=["FHIR - Metadata"])
