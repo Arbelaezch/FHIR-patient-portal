@@ -20,6 +20,10 @@ pydantic[email]==2.10.6
 authlib==1.4.0
 httpx==0.28.1
 
+# Session storage
+redis==5.2.1
+itsdangerous==2.2.0
+
 # Environment variables
 python-dotenv==1.0.1
 
