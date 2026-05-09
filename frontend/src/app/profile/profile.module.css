@@ -1,0 +1,153 @@
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 56px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .back {
+    font-size: 13px;
+    color: var(--text-secondary);
+    transition: color 0.15s;
+    width: 80px;
+  }
+  
+  .back:hover {
+    color: var(--accent-blue);
+  }
+  
+  .navTitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  
+  .main {
+    flex: 1;
+    padding: 48px 32px;
+    max-width: 560px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .avatarSection {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
+  
+  .name {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  
+  .handle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  
+  .divider {
+    height: 1px;
+    background: var(--border);
+  }
+  
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  .sectionTitle {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+  
+  .fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .fieldLabel {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  
+  .fieldValue {
+    font-size: 13px;
+    color: var(--text-primary);
+  }
+  
+  .fieldValueMono {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-primary);
+  }
+  
+  .actions {
+    display: flex;
+  }
+  
+  .logoutBtn {
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--accent-red);
+    font-size: 13px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  
+  .logoutBtn:hover {
+    border-color: var(--accent-red);
+    background: rgba(248, 81, 73, 0.08);
+  }
