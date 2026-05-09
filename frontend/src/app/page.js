@@ -42,7 +42,7 @@ function extractObservations(bundle) {
     const label = obs.code?.text ?? obs.code?.coding?.[0]?.display ?? 'Observation';
     const qty   = obs.valueQuantity;
     const value = qty
-      ? `${qty.value} ${qty.unit ?? ''}`.trim()
+      ? `${parseFloat(qty.value).toFixed(2)} ${qty.unit ?? ''}`.trim()
       : obs.valueString ?? obs.valueCodeableConcept?.text ?? '—';
     return { label, value };
   });
