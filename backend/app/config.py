@@ -25,11 +25,17 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8000"]
     
-    # SMART on FHIR (for external EHR integration)
-    SMART_CLIENT_ID: str | None = None
-    SMART_CLIENT_SECRET: str | None = None
-    SMART_REDIRECT_URI: str = "http://localhost:8000/smart/callback"
-    
+    # Epic SMART on FHIR
+    EPIC_CLIENT_ID: str
+    EPIC_REDIRECT_URI: str = "http://localhost:8000/auth/callback"
+    EPIC_FHIR_BASE_URL: str = "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4"
+    EPIC_AUTH_URL: str = "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize"
+    EPIC_TOKEN_URL: str = "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token"
+
+    REDIS_URL: str = "redis://localhost:6379"
+
+    FRONTEND_URL: str = "http://localhost:3000"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
