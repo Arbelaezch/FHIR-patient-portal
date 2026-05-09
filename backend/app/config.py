@@ -25,12 +25,18 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8000"]
     
-    # Epic SMART on FHIR
+    # SMART on FHIR
     EPIC_CLIENT_ID: str
     EPIC_REDIRECT_URI: str = "http://localhost:8000/auth/callback"
-    EPIC_FHIR_BASE_URL: str = "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4"
-    EPIC_AUTH_URL: str = "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize"
-    EPIC_TOKEN_URL: str = "https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token"
+
+    # Used as the `aud` parameter in the authorization request
+    EPIC_FHIR_BASE_URL: str = "https://launch.smarthealthit.org/v/r4/sim/eyJhIjoiMSJ9/fhir"
+
+    # Used for actual FHIR API calls in the proxy
+    EPIC_FHIR_API_URL: str = "https://r4.smarthealthit.org"
+
+    EPIC_AUTH_URL: str = "https://launch.smarthealthit.org/v/r4/sim/eyJhIjoiMSJ9/auth/authorize"
+    EPIC_TOKEN_URL: str = "https://launch.smarthealthit.org/v/r4/sim/eyJhIjoiMSJ9/auth/token"
 
     REDIS_URL: str = "redis://localhost:6379"
 

@@ -19,6 +19,7 @@ import base64
 import uuid
 
 import httpx
+from urllib.parse import urlencode
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
 
@@ -61,24 +62,36 @@ async def login(request: Request):
         "response_type": "code",
         "client_id": settings.EPIC_CLIENT_ID,
         "redirect_uri": settings.EPIC_REDIRECT_URI,
-        "scope": "openid fhirUser patient/Patient.read patient/Observation.read patient/MedicationRequest.read patient/Condition.read",
+        "scope": "openid fhirUser launch/patient patient/Patient.read patient/Observation.read patient/MedicationRequest.read patient/Condition.read",
         "state": state,
         "code_challenge": code_challenge,
         "code_challenge_method": "S256",
         "aud": settings.EPIC_FHIR_BASE_URL,
     }
 
-    query = "&".join(f"{k}={v}" for k, v in params.items())
+    # query = "&".join(f"{k}={v}" for k, v in params.items())
+    query = urlencode(params)
     auth_url = f"{settings.EPIC_AUTH_URL}?{query}"
+
+    # print(f"Redirecting to: {auth_url}")
 
     return RedirectResponse(auth_url)
 
 
 @router.get("/callback")
-async def callback(request: Request, code: str, state: str):
+async def callback(request: Request, code: str = None, state: str = None, error: str = None, error_description: str = None):
     """
     Step 2 — Epic redirects here after the user authenticates.
     """
+    # print(f"Callback received - code: {code}, state: {state}, error: {error}, error_description: {error_description}")
+    # print(f"All query params: {dict(request.query_params)}")
+
+    if error:
+        raise HTTPException(status_code=400, detail=f"Auth error: {error} - {error_description}")
+    
+    if not code or not state:
+        raise HTTPException(status_code=400, detail=f"Missing code or state. Params received: {dict(request.query_params)}")
+
     raw = await SessionStore.get(f"pkce:{state}")
     if not raw:
         raise HTTPException(status_code=400, detail="Invalid or expired state. Please try logging in again.")

@@ -50,7 +50,8 @@ async def get_epic_token(request: Request) -> tuple[str, str]:
 
 
 async def _epic_get(path: str, access_token: str, params: dict = None) -> dict:
-    url = f"{settings.EPIC_FHIR_BASE_URL}/{path}"
+    # url = f"{settings.EPIC_FHIR_BASE_URL}/{path}"
+    url = f"{settings.EPIC_FHIR_API_URL}/{path}"
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/fhir+json",
