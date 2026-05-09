@@ -4,6 +4,8 @@ A patient-facing health dashboard that authenticates against Epic's EHR system u
 
 Built as a portfolio project to demonstrate healthcare domain knowledge and full-stack development skills relevant to EHR/EMR companies.
 
+![Demo](demo.gif)
+
 ## Overview
 
 This project implements the **SMART App Launch Framework** — the OAuth2-based standard used by real EHR systems like Epic and Cerner to authorize third-party applications to access patient data. The app authenticates against Epic's non-production sandbox, retrieves patient health records, and displays them in a clean dashboard UI.
