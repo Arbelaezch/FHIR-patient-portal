@@ -1,6 +1,6 @@
 # FHIR Patient Portal
 
-A patient-facing health dashboard that authenticates against Epic's EHR system using the SMART on FHIR standard and displays real patient data via Epic's FHIR R4 API.
+A patient-facing health dashboard that authenticates using the SMART on FHIR standard and displays real patient data via a FHIR R4 API.
 
 Built as a portfolio project to demonstrate healthcare domain knowledge and full-stack development skills relevant to EHR/EMR companies.
 
@@ -8,13 +8,13 @@ Built as a portfolio project to demonstrate healthcare domain knowledge and full
 
 ## Overview
 
-This project implements the **SMART App Launch Framework** — the OAuth2-based standard used by real EHR systems like Epic and Cerner to authorize third-party applications to access patient data. The app authenticates against Epic's non-production sandbox, retrieves patient health records, and displays them in a clean dashboard UI.
+This project implements the **SMART App Launch Framework** — the OAuth2-based standard used by real EHR systems like Epic and Cerner to authorize third-party applications to access patient data. The app authenticates against the SMART Health IT reference sandbox, retrieves patient health records, and displays them in a clean dashboard UI.
 
 **What this demonstrates:**
 - SMART on FHIR OAuth2 with PKCE (the modern standard for patient-facing apps, no client secret required)
-- Secure server-side session management — Epic access tokens never touch the browser
+- Secure server-side session management — FHIR access tokens never touch the browser
 - FHIR R4 resource parsing for Patient, Observation, MedicationRequest, and Condition
-- Real integration against Epic's sandbox API using test patient credentials
+- Real integration against a FHIR R4 server with synthetic patient data
 
 ## Tech Stack
 
@@ -26,7 +26,7 @@ This project implements the **SMART App Launch Framework** — the OAuth2-based 
 | Session Store | Redis |
 | Database | PostgreSQL 16 |
 | Container | Docker, Docker Compose |
-| FHIR | Epic R4 API via `fhir.resources` |
+| FHIR | SMART Health IT R4 sandbox via `fhir.resources` |
 
 ## Architecture
 
@@ -38,16 +38,16 @@ Next.js (port 3000)                FastAPI (port 8000)
         │ ────────────────────────────────>│
         │                                  │ 2. Generate PKCE pair
         │                                  │    Store verifier in Redis
-        │                                  │    Redirect to Epic auth URL
+        │                                  │    Redirect to SMART auth URL
         │ <────────────────────────────────│
         │
-        │  3. User logs in at Epic MyChart
-        │     Approves data sharing
+        │  3. User selects a patient
+        │     in the SMART launcher
         │
-        │  4. Epic redirects to /auth/callback?code=...
+        │  4. Launcher redirects to /auth/callback?code=...
         │ ────────────────────────────────>│
         │                                  │ 5. Exchange code + verifier
-        │                                  │    for Epic access token
+        │                                  │    for access token
         │                                  │    Store token in Redis
         │                                  │    Set signed session cookie
         │ <────────────────────────────────│
@@ -55,12 +55,12 @@ Next.js (port 3000)                FastAPI (port 8000)
         │  6. GET /fhir/Patient/{id}       │
         │ ────────────────────────────────>│
         │                                  │ 7. Retrieve token from Redis
-        │                                  │    Proxy request to Epic FHIR API
+        │                                  │    Proxy request to FHIR API
         │                                  │    Return FHIR resource
         │ <────────────────────────────────│
 ```
 
-The Epic access token is stored server-side in Redis and never sent to the browser. The browser holds only a signed session cookie that references the Redis entry.
+The access token is stored server-side in Redis and never sent to the browser. The browser holds only a signed session cookie that references the Redis entry.
 
 ## Project Structure
 
@@ -88,7 +88,7 @@ FHIR-patient-portal/
 │   │   │   ├── profile/
 │   │   │   │   └── page.js          # Patient profile page
 │   │   │   └── login/
-│   │   │       └── page.js          # Login page — initiates Epic auth flow
+│   │   │       └── page.js          # Login page — initiates SMART on FHIR flow
 │   │   ├── components/
 │   │   │   └── ResourceCard.js      # Reusable FHIR resource display card
 │   │   └── lib/
@@ -103,15 +103,6 @@ FHIR-patient-portal/
 ### Prerequisites
 
 - Docker and Docker Compose
-- An Epic on FHIR developer account at [fhir.epic.com](https://fhir.epic.com)
-- A registered app with the following selected APIs:
-  - `Patient.Read (Demographics) (R4)`
-  - `Observation.Read (Labs) (R4)`
-  - `Observation.Read (Vital Signs) (R4)`
-  - `MedicationRequest.Read (Signed Medication Order) (R4)`
-  - `Condition.Read (Encounter Diagnosis) (R4)`
-  - `Condition.Read (Health Concerns) (R4)`
-  - `Condition.Read (Medical History) (R4)`
 
 ### Installation
 
@@ -127,11 +118,7 @@ FHIR-patient-portal/
    DATABASE_URL=postgresql+asyncpg://fhir_user:fhir_password@postgres:5432/fhir_portal
    SECRET_KEY=your-secret-key-change-in-production
    REDIS_URL=redis://redis:6379
-   EPIC_CLIENT_ID=your-non-production-client-id
-   EPIC_REDIRECT_URI=http://localhost:8000/auth/callback
-   EPIC_FHIR_BASE_URL=https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4
-   EPIC_AUTH_URL=https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize
-   EPIC_TOKEN_URL=https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token
+   EPIC_CLIENT_ID=my_fhir_portal
    FRONTEND_URL=http://localhost:3000
    ```
 
@@ -155,31 +142,19 @@ FHIR-patient-portal/
 
 6. **Open the app**
 
-   Navigate to [http://localhost:3000](http://localhost:3000) and click **Connect with Epic** to authenticate using Epic's sandbox test patients.
-
-### Test Patients
-
-Epic provides synthetic test patients for sandbox development. Use the following credentials on the MyChart login screen:
-
-| Patient | Username | Password |
-|---|---|---|
-| Derrick Lin | `fhirderrick` | `epicepic1` |
-| Camila Lopez | `fhircamila` | `epicepic1` |
-| Desiree Powell | `fhirdesiree` | `epicepic1` |
-
-Each patient has different FHIR resources available. The dashboard displays whatever data Epic returns for the authenticated patient and gracefully shows "No data available" for resource types not present in that patient's record.
+   Navigate to [http://localhost:3000](http://localhost:3000) and click **Connect** to authenticate via the SMART launcher and select a synthetic test patient.
 
 ## Auth Flow Detail
 
 This app implements the **SMART App Launch (Standalone Launch)** pattern with **PKCE**:
 
-1. `/auth/login` — generates a `code_verifier` (random string) and `code_challenge` (SHA-256 hash of verifier), stores the verifier in Redis, redirects to Epic's authorization endpoint
-2. User authenticates at Epic MyChart and approves data sharing
-3. `/auth/callback` — Epic redirects here with an authorization `code`; the backend retrieves the verifier from Redis, exchanges `code + verifier` for an access token, stores the token in Redis, sets a signed session cookie
-4. All subsequent FHIR requests go through the backend proxy, which retrieves the token from Redis and injects it as a `Bearer` token in the upstream Epic request
+1. `/auth/login` — generates a `code_verifier` (random string) and `code_challenge` (SHA-256 hash of verifier), stores the verifier in Redis, redirects the user to the SMART authorization endpoint
+2. User selects a synthetic test patient in the SMART launcher
+3. `/auth/callback` — the launcher redirects here with an authorization `code`; the backend retrieves the verifier from Redis, exchanges `code + verifier` for an access token, stores the token in Redis, sets a signed session cookie
+4. All subsequent FHIR requests go through the backend proxy, which retrieves the token from Redis and injects it as a `Bearer` token in the upstream FHIR request
 5. `/auth/logout` — deletes the Redis entry and clears the session cookie
 
-PKCE eliminates the need for a client secret, which is the correct approach for patient-facing apps where the client cannot securely store a secret.
+PKCE eliminates the need for a client secret, which is the correct approach for patient-facing apps where the client cannot securely store a secret. This is the same auth pattern used by production integrations with Epic, Cerner, and other major EHR vendors.
 
 ## API Endpoints
 
